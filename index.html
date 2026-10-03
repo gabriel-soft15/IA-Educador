@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IA Educadores · Assistente de prompts para professores</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="topo">
+    <h1>IA Educadores</h1>
+    <p>Descreva a atividade que você quer. A IA faz as perguntas certas e monta um prompt completo para você usar no ChatGPT, Gemini, Claude ou outra IA.</p>
+  </header>
+
+
+  <main class="folha">
+
+    <!-- ETAPA 1: pedido do professor -->
+    <section id="etapa-1" class="etapa" aria-labelledby="titulo-1">
+      <h2 id="titulo-1"><span class="num" aria-hidden="true">1</span>O que você precisa</h2>
+
+      <fieldset class="tipos">
+        <legend>Tipo de atividade</legend>
+        <div id="lista-tipos" class="tipos-grade"></div>
+      </fieldset>
+
+      <div class="linha">
+        <label class="campo">
+          <span class="rotulo">Ano ou série</span>
+          <input type="text" id="serie" placeholder="Ex.: 5º ano" autocomplete="off">
+        </label>
+        <label class="campo">
+          <span class="rotulo">Disciplina</span>
+          <input type="text" id="disciplina" placeholder="Ex.: Matemática" autocomplete="off">
+        </label>
+      </div>
+
+      <fieldset class="tipos">
+        <legend>Como a IA deve entregar a atividade</legend>
+        <div id="lista-formatos" class="tipos-grade"></div>
+      </fieldset>
+
+      <label class="campo">
+        <span class="rotulo">Descreva a atividade com suas palavras</span>
+        <textarea id="descricao" rows="5" placeholder="Ex.: Quero exercícios de frações com situações do dia a dia, tipo dividir pizza e chocolate. Uns 10, alguns com desenho."></textarea>
+      </label>
+
+      <button type="button" id="btn-analisar" class="btn-principal">Analisar pedido</button>
+      <p id="erro-1" class="erro" role="alert" hidden></p>
+    </section>
+
+    <!-- ETAPA 2: perguntas da IA -->
+    <section id="etapa-2" class="etapa" aria-labelledby="titulo-2" hidden>
+      <h2 id="titulo-2"><span class="num" aria-hidden="true">2</span>Alguns detalhes</h2>
+      <p id="entendimento" class="entendimento"></p>
+      <p class="ajuda">Responda o que souber. Toque numa sugestão para usá-la ou escreva a sua.</p>
+      <div id="perguntas"></div>
+      <div class="acoes">
+        <button type="button" id="btn-gerar" class="btn-principal">Gerar prompt</button>
+        <button type="button" id="btn-pular" class="btn-secundario">Gerar sem responder</button>
+      </div>
+      <p id="erro-2" class="erro" role="alert" hidden></p>
+    </section>
+
+    <!-- ETAPA 3: prompt final -->
+    <section id="etapa-3" class="etapa" aria-labelledby="titulo-3" hidden>
+      <h2 id="titulo-3"><span class="num" aria-hidden="true">3</span>Seu prompt</h2>
+      <div class="prompt-caixa">
+        <pre id="prompt-final"></pre>
+      </div>
+      <div class="acoes">
+        <button type="button" id="btn-copiar" class="btn-principal">Copiar prompt</button>
+        <button type="button" id="btn-regerar" class="btn-secundario">Gerar outra versão</button>
+        <button type="button" id="btn-novo" class="btn-secundario">Novo pedido</button>
+      </div>
+      <p class="ajuda">Cole este prompt na IA que você preferir. Se o resultado não ficar bom, ajuste o pedido e gere de novo.</p>
+      <p id="erro-3" class="erro" role="alert" hidden></p>
+    </section>
+
+    <p id="status" class="status" aria-live="polite"></p>
+  </main>
+
+  <footer>
+    IA Educadores usa a API do Gemini para analisar o pedido e escrever o prompt.
+  </footer>
+
+  <script src="prompts.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
