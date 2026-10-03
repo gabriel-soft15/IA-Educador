@@ -39,8 +39,13 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ erro: "O pedido está muito longo. Resuma a descrição e tente de novo." });
   }
 
-  const modelo = process.env.GEMINI_MODELO || "gemini-3.5-flash";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelo)}:generateContent`;
+  // Modelo principal e modelos reserva (mais leves, com limite gratuito maior).
+  // Se o principal atingir o limite ou estiver instável, o servidor tenta os reservas.
+  const modelos = [
+    process.env.GEMINI_MODELO || "gemini-3.5-flash",
+    process.env.GEMINI_MODELO_RESERVA || "gemini-3.5-flash-lite",
+    "gemini-flash-lite-latest"
+  ];
 
   const corpo = {
     systemInstruction: { parts: [{ text: instrucao }] },
@@ -52,14 +57,21 @@ module.exports = async function handler(req, res) {
   };
 
   let resposta;
-  try {
-    resposta = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-goog-api-key": chave },
-      body: JSON.stringify(corpo)
-    });
-  } catch (e) {
-    return res.status(502).json({ erro: "O servidor não conseguiu se conectar ao Gemini. Tente de novo em instantes." });
+  for (let i = 0; i < modelos.length; i++) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelos[i])}:generateContent`;
+    try {
+      resposta = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": chave },
+        body: JSON.stringify(corpo)
+      });
+    } catch (e) {
+      return res.status(502).json({ erro: "O servidor não conseguiu se conectar ao Gemini. Tente de novo em instantes." });
+    }
+    const podeTentarReserva =
+      resposta.status === 429 || resposta.status === 503 || (i > 0 && resposta.status === 404);
+    if (!podeTentarReserva || i === modelos.length - 1) break;
+    console.warn(`Modelo ${modelos[i]} retornou ${resposta.status}. Tentando ${modelos[i + 1]}.`);
   }
 
   const dados = await resposta.json().catch(() => ({}));
