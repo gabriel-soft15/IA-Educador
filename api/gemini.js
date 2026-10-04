@@ -52,7 +52,8 @@ module.exports = async function handler(req, res) {
     contents: [{ role: "user", parts: [{ text: mensagem }] }],
     generationConfig: {
       temperature: 0.5,
-      responseMimeType: etapa === "analise" ? "application/json" : "text/plain"
+      responseMimeType: etapa === "analise" ? "application/json" : "text/plain",
+      thinkingConfig: { thinkingLevel: "low" }
     }
   };
 
